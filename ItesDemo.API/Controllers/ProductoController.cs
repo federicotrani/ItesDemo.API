@@ -33,9 +33,9 @@ public class ProductoController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<List<Producto>>> GetProductByIdAsync(int ID)
+    public async Task<ActionResult<List<Producto>>> GetProductByIdAsync(int id)
     {
-        var product = await context.Productos.Where(x => x.id == ID).FirstOrDefaultAsync();
+        var product = await context.Productos.Where(x => x.id == id).FirstOrDefaultAsync();
 
         if (product != null)
         {
