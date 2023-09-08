@@ -22,7 +22,7 @@ namespace ItesDemo.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<string>> LoginAsync(LoginRequest login)
+        public async Task<ActionResult<LoginResponse>> LoginAsync(LoginRequest login)
         {
             var userEncontrado = await context.Usuarios
                 .Where(x => x.usuario == login.Usuario && x.password == login.Password)
@@ -30,14 +30,14 @@ namespace ItesDemo.API.Controllers
 
             if (userEncontrado == null)
             {
-                return NotFound();
+                return StatusCode(401);
             }
             else
             {
                 // generate token
                 string token = CreateAccessToken(userEncontrado);
 
-                return Ok(token);
+                return Ok(new LoginResponse { Token = token});
             }
         }
 

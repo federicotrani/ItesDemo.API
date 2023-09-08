@@ -1,5 +1,6 @@
 ﻿using ItesDemo.API.Data;
 using ItesDemo.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ namespace ItesDemo.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ProductoController : ControllerBase
 {
     private readonly ApiDbContext context;
@@ -16,7 +18,7 @@ public class ProductoController : ControllerBase
     {
         this.context = context;
     }
-
+  
     [HttpGet]
     public async Task<ActionResult<List<Producto>>> GetProductsAsync()
     {
