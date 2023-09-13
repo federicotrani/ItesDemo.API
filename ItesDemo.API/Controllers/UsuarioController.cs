@@ -30,7 +30,7 @@ namespace ItesDemo.API.Controllers
 
             if (userEncontrado == null)
             {
-                return StatusCode(401);
+                return NotFound();
             }
             else
             {
