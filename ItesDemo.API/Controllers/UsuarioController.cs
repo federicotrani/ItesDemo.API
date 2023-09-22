@@ -15,10 +15,12 @@ namespace ItesDemo.API.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly ApiDbContext context;
+        private readonly IConfiguration configuration;
 
-        public UsuarioController(ApiDbContext context)
+        public UsuarioController(ApiDbContext context, IConfiguration configuration)
         {
             this.context = context;
+            this.configuration = configuration;
         }
 
         [HttpPost]
@@ -35,10 +37,44 @@ namespace ItesDemo.API.Controllers
             else
             {
                 // generate token
-                string token = CreateAccessToken(userEncontrado);
+                string token = GenerarToken(userEncontrado);
 
                 return Ok(new LoginResponse { Token = token});
             }
+        }
+
+        string GenerarToken(Usuario usuario)
+        {
+            var issuer = configuration["Jwt:Issuer"];
+            var audience = configuration["Jwt:Audience"];
+            var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]);
+            var signingCredentials = new SigningCredentials(
+                                    new SymmetricSecurityKey(key),
+                                    SecurityAlgorithms.HmacSha256Signature
+                                );
+
+            // Add Claims
+            var subject = new ClaimsIdentity(new[]
+            {
+                    new Claim(JwtRegisteredClaimNames.Sub,usuario.nombre),
+                    new Claim(JwtRegisteredClaimNames.Email,usuario.email)
+                });
+            // define expiration
+            var expires = DateTime.UtcNow.AddDays(7);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = subject,
+                Expires = DateTime.UtcNow.AddMinutes(10),
+                Issuer = issuer,
+                Audience = audience,
+                SigningCredentials = signingCredentials
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwtToken = tokenHandler.WriteToken(token);
+
+            return jwtToken;
         }
 
         string CreateAccessToken(Usuario user)

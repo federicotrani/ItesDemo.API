@@ -9,7 +9,7 @@ namespace ItesDemo.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-
+[Authorize]
 public class ProductoController : ControllerBase
 {
     private readonly ApiDbContext context;
